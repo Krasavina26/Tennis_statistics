@@ -7,13 +7,7 @@
 |:-----------:|:----------:|
 | ![output_test (1)](https://github.com/user-attachments/assets/1818eb69-2116-459b-97b4-c27943f17b0a) | ![output_test](https://github.com/user-attachments/assets/d5169401-ac7f-429a-ae84-71a75074c549) |
 
-Также система позволяет:
-- сохранить горизонтальное видео мини корта сверху:
-  <p align="center">
-  <img src="https://github.com/user-attachments/assets/a4ea4874-3cf0-443a-bfc6-4920105a24ff">
-</p>
-
-- получить характеристике по игре:
+Также система позволяет получить характеристике по игре:
   1. Количество ударов и подач каждого игрока
   2. Доли успешных подач каждого игрока
   3. Доли двойных ошибок при подачах каждого игрока
@@ -21,7 +15,18 @@
   5. Среднее и максимальное число ударов за розыгрыши
   6. Длину пробега каждого игрока в метрах
   7. Средние и максимальные скорости каждого игрока в км/ч
-  8. Покрываемость корта:
-     <div align="center">
-  <img src="https://github.com/user-attachments/assets/1bf45c85-cbe2-4e80-afff-19fa93507ccd" width="400">
-</div>
+  8.
+  <table>
+    <tr>
+      <th align="center">Видео горизонтального мини корта</th>
+      <th align="center">Покрываемость корта</th>
+    </tr>
+    <tr>
+      <td align="center">
+        <img src="https://github.com/user-attachments/assets/0f2ac705-cfd0-47e8-84fa-c26e597ce27a" width="400">
+      </td>
+      <td align="center">
+        <img src="https://github.com/user-attachments/assets/4985e427-32e1-4528-9d97-a6ef89c63f8a" width="400">
+      </td>
+    </tr>
+  </table>
