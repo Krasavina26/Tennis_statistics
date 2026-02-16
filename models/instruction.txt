@@ -1,0 +1,13 @@
+Put here all your models!
+
+You need:
+1) player obj detection model
+2) ball obj detection model
+3) court keypoint detection model
+4) net obj detection model
+
+My weights:
+1) player obj detection model: https://drive.google.com/file/d/1sJ9Gtce1_JbZFlqp5RfYYZf5p2552rYa/view?usp=drive_link
+2) ball obj detection model: https://drive.google.com/file/d/1xIu5vyqPae_qOQa1v6_zPWu1qE28nhnB/view?usp=drive_link
+3) court keypoint detection model: https://drive.google.com/file/d/1NwVHSXQobqMzTARXe1QX2-BeA9aMHc9U/view?usp=drive_link
+4) net obj detection model: https://drive.google.com/file/d/1CI-hkXqBrUdJILHrgYG4Vreu6ZW7v-A8/view?usp=drive_link
