@@ -19,7 +19,6 @@ import matplotlib.pyplot as plt
 
 def plot_extremums_analysis(ball_positions, extremums, output_path="extremums_analysis.png"):
     """График с отмеченными экстремумами"""
-    # Получаем Y координаты
     y_values = []
     for pos in ball_positions:
         if pos and len(pos) == 4:
@@ -28,7 +27,6 @@ def plot_extremums_analysis(ball_positions, extremums, output_path="extremums_an
         else:
             y_values.append(np.nan)
     
-    # Интерполируем
     y_values = pd.Series(y_values).interpolate().tolist()
     
     plt.figure(figsize=(14, 8))
@@ -37,7 +35,6 @@ def plot_extremums_analysis(ball_positions, extremums, output_path="extremums_an
     plt.subplot(2, 1, 1)
     plt.plot(range(len(y_values)), y_values, 'b-', linewidth=1.5, alpha=0.7, label='Y координата')
     
-    # Отмечаем экстремумы
     maxima_frames = [e['frame'] for e in extremums if e['type'] == 'maximum']
     maxima_y = [y_values[f] for f in maxima_frames if f < len(y_values)]
     
@@ -65,10 +62,9 @@ def plot_extremums_analysis(ball_positions, extremums, output_path="extremums_an
         plt.plot(range(len(delta_y)), delta_y, 'g-', linewidth=1.5, alpha=0.7, label='Производная ΔY')
         plt.axhline(y=0, color='k', linestyle='--', alpha=0.5)
         
-        # Отмечаем точки смены знака
         sign_changes = []
         for i in range(1, len(delta_y)):
-            if delta_y[i-1] * delta_y[i] < 0:  # Смена знака
+            if delta_y[i-1] * delta_y[i] < 0:
                 sign_changes.append(i)
         
         if sign_changes:
@@ -97,7 +93,6 @@ def plot_ball_movement(ball_positions, output_path="ball_movement_analysis.png",
         print("Нет данных о позициях мяча для построения графика")
         return
     
-    # Собираем данные
     frames = []
     x_values = []
     y_values = []
@@ -117,7 +112,6 @@ def plot_ball_movement(ball_positions, output_path="ball_movement_analysis.png",
     
     print(f"  Анализ {len(frames)} кадров с мячом")
     
-    # Создаем большой график
     plt.figure(figsize=(18, 12))
     
     # 1. График координат X и Y
@@ -181,7 +175,6 @@ def plot_ball_movement(ball_positions, output_path="ball_movement_analysis.png",
             plt.axhline(y=x_threshold, color='orange', linestyle='--', alpha=0.7,
                        label=f'Порог: {x_threshold:.1f}')
             
-            # Аномалии по X
             x_anomaly_frames = []
             x_anomaly_changes = []
             for i, change in enumerate(x_changes):
@@ -215,7 +208,6 @@ def plot_ball_movement(ball_positions, output_path="ball_movement_analysis.png",
             plt.axhline(y=y_threshold, color='orange', linestyle='--', alpha=0.7,
                        label=f'Порог: {y_threshold:.1f}')
             
-            # Аномалии по Y
             y_anomaly_frames = []
             y_anomaly_changes = []
             for i, change in enumerate(y_changes):
@@ -232,7 +224,6 @@ def plot_ball_movement(ball_positions, output_path="ball_movement_analysis.png",
     # 6. График отношения изменений Y/X (для обнаружения отскоков)
     plt.subplot(3, 3, 6)
     if len(x_changes) > 0 and len(y_changes) > 0:
-        # Вычисляем отношение Y/X для каждого кадра
         ratios = []
         valid_frames = []
         
@@ -251,7 +242,6 @@ def plot_ball_movement(ball_positions, output_path="ball_movement_analysis.png",
             plt.axhline(y=1, color='k', linestyle='--', alpha=0.5, label='Порог Y/X=1')
             plt.axhline(y=2, color='orange', linestyle='--', alpha=0.7, label='Порог Y/X=2 (отскок?)')
             
-            # Подсвечиваем возможные отскоки (Y/X > 2)
             bounce_frames = []
             bounce_ratios = []
             for i, ratio in enumerate(ratios):
@@ -275,7 +265,6 @@ def plot_ball_movement(ball_positions, output_path="ball_movement_analysis.png",
     plt.grid(True, alpha=0.3)
     plt.colorbar(scatter, label='Номер кадра')
     
-    # Добавляем стрелки для направления движения
     if len(x_values) > 5:
         step = len(x_values) // 5
         for i in range(0, len(x_values)-1, step):
@@ -297,9 +286,8 @@ def plot_ball_movement(ball_positions, output_path="ball_movement_analysis.png",
     
     # 9. Сводная статистика
     plt.subplot(3, 3, 9)
-    plt.axis('off')  # Отключаем оси
+    plt.axis('off')
     
-    # Формируем текст статистики
     stats_text = f"=== СТАТИСТИКА ДВИЖЕНИЯ МЯЧА ===\n\n"
     stats_text += f"Всего кадров: {len(frames)}\n"
     stats_text += f"Кадры с мячом: {len(x_values)}\n\n"
@@ -334,15 +322,13 @@ def plot_ball_movement(ball_positions, output_path="ball_movement_analysis.png",
              bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.8))
     
     plt.suptitle(f'{title}\n', fontsize=14, fontweight='bold')
-    plt.tight_layout(rect=[0, 0, 1, 0.97])  # Оставляем место для заголовка
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
     
-    # Сохраняем график
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
     plt.close()
     
     print(f"  График сохранен: {output_path}")
     
-    # Возвращаем статистику
     stats = {
         'total_frames': len(frames),
         'frames_with_ball': len(x_values),
@@ -388,14 +374,12 @@ def plot_ball_shot_analysis(ball_positions, candidate_frames, detected_shots,
         print("Нет данных о позициях мяча для построения графика")
         return
     
-    # Собираем данные Y координат
     frames = []
     y_values = []
     x_values = []
     
     for i, ball_pos in enumerate(ball_positions):
         if ball_pos is not None and len(ball_pos) == 4:
-            # Получаем центр bounding box
             x1, y1, x2, y2 = ball_pos
             center_x = (x1 + x2) / 2
             center_y = (y1 + y2) / 2
@@ -409,10 +393,8 @@ def plot_ball_shot_analysis(ball_positions, candidate_frames, detected_shots,
     
     print(f"  Анализ {len(frames)} кадров для графика ударов")
     
-    # Создаем график
     fig, axes = plt.subplots(2, 2, figsize=(16, 10))
     
-    # 1. Координата Y мяча с кандидатами и ударами
     ax1 = axes[0, 0]
     ax1.plot(frames, y_values, 'b-', linewidth=1.5, label='Y координата', alpha=0.7)
     ax1.set_xlabel('Номер кадра')
@@ -420,19 +402,16 @@ def plot_ball_shot_analysis(ball_positions, candidate_frames, detected_shots,
     ax1.set_title('Координата Y мяча с детекцией ударов')
     ax1.grid(True, alpha=0.3)
     
-    # Отмечаем кандидатов (изменения направления)
     if candidate_frames:
         cand_y = [y_values[frame] if frame < len(y_values) else 0 for frame in candidate_frames]
         ax1.scatter(candidate_frames, cand_y, color='orange', s=40, 
                    label=f'Кандидаты ({len(candidate_frames)})', 
                    zorder=5, alpha=0.6, edgecolors='black')
     
-    # Отмечаем обнаруженные удары
     if detected_shots:
         shot_frames = [shot['frame'] for shot in detected_shots]
         shot_y = [y_values[frame] if frame < len(y_values) else 0 for frame in shot_frames]
         
-        # Разделяем подачи и обычные удары
         serve_frames = [shot['frame'] for shot in detected_shots if shot.get('is_serve', False)]
         serve_y = [y_values[frame] if frame < len(y_values) else 0 for frame in serve_frames]
         
@@ -451,31 +430,20 @@ def plot_ball_shot_analysis(ball_positions, candidate_frames, detected_shots,
     
     ax1.legend(loc='upper right')
     
-    # 2. Производная (изменение Y) с порогом
     ax2 = axes[0, 1]
     
     if len(y_values) > 1:
-        # Вычисляем delta_y
         delta_y = np.diff(y_values)
-        delta_y = np.concatenate([[0], delta_y])  # Добавляем 0 в начало
-        
-        # # Сглаживаем производную
-        # window_size = 5
-        # if len(delta_y) > window_size:
-        #     delta_y_smooth = np.convolve(delta_y, np.ones(window_size)/window_size, mode='same')
-        # else:
-        #     delta_y_smooth = delta_y
+        delta_y = np.concatenate([[0], delta_y])
         
         ax2.plot(frames, delta_y, 'g-', linewidth=1.5, label='ΔY (сглаженная)', alpha=0.7)
         ax2.axhline(y=0, color='k', linestyle='--', alpha=0.5)
         
-        # Пороги для обнаружения изменений
         threshold = np.std(delta_y) * 0.5
         ax2.axhline(y=threshold, color='orange', linestyle='--', alpha=0.7, 
                    label=f'Порог: {threshold:.1f}')
         ax2.axhline(y=-threshold, color='orange', linestyle='--', alpha=0.7)
         
-        # Отмечаем моменты пересечения порога
         positive_crossings = []
         negative_crossings = []
         
@@ -501,7 +469,6 @@ def plot_ball_shot_analysis(ball_positions, candidate_frames, detected_shots,
     scatter = ax3.scatter(x_values, y_values, c=frames, cmap='viridis', 
                          s=10, alpha=0.5, edgecolors='none')
     
-    # Отмечаем удары на траектории
     if detected_shots:
         for shot in detected_shots:
             frame = shot['frame']
@@ -515,7 +482,6 @@ def plot_ball_shot_analysis(ball_positions, candidate_frames, detected_shots,
                           edgecolors='black', linewidth=1.5,
                           zorder=10, alpha=0.9)
                 
-                # Подписываем номер игрока
                 player_id = shot.get('player_id', 0)
                 ax3.annotate(f'P{player_id}', 
                            (x_values[frame], y_values[frame]),
@@ -532,14 +498,12 @@ def plot_ball_shot_analysis(ball_positions, candidate_frames, detected_shots,
     ax4 = axes[1, 1]
     ax4.axis('off')
     
-    # Формируем текст статистики
     stats_text = "=== СТАТИСТИКА ДЕТЕКЦИИ УДАРОВ ===\n\n"
     stats_text += f"Всего кадров: {len(frames)}\n"
     stats_text += f"Кандидатов на удары: {len(candidate_frames)}\n"
     stats_text += f"Обнаружено ударов: {len(detected_shots)}\n\n"
     
     if detected_shots:
-        # Статистика по игрокам
         player_stats = {}
         for shot in detected_shots:
             player_id = shot.get('player_id', 0)
@@ -549,20 +513,17 @@ def plot_ball_shot_analysis(ball_positions, candidate_frames, detected_shots,
         for player_id, count in player_stats.items():
             stats_text += f"  Игрок {player_id}: {count} ударов\n"
         
-        # Разделение на подачи/удары
         serves = [s for s in detected_shots if s.get('is_serve', False)]
         shots = [s for s in detected_shots if not s.get('is_serve', False)]
         
         stats_text += f"\nПодачи: {len(serves)}\n"
         stats_text += f"Обычные удары: {len(shots)}\n"
         
-        # Средняя скорость
         if detected_shots:
             speeds = [s.get('speed_after', 0) for s in detected_shots]
             avg_speed = np.mean(speeds) if speeds else 0
             stats_text += f"\nСредняя скорость удара: {avg_speed:.1f} px/s\n"
     
-    # Координаты Y
     y_min, y_max = min(y_values), max(y_values)
     y_range = y_max - y_min
     y_mean, y_std = np.mean(y_values), np.std(y_values)
@@ -572,7 +533,6 @@ def plot_ball_shot_analysis(ball_positions, candidate_frames, detected_shots,
     stats_text += f"Среднее Y: {y_mean:.1f} ± {y_std:.1f}\n"
     stats_text += f"Размах Y: {y_range:.1f}\n"
     
-    # Распределение кандидатов
     if candidate_frames:
         cand_intervals = []
         for i in range(1, len(candidate_frames)):
@@ -618,7 +578,6 @@ def plot_detail_analysis(frames, y_values, candidate_frames, detected_shots, out
     """Детальный график для первых 100 кадров"""
     plt.figure(figsize=(12, 6))
     
-    # Отбираем кандидаты и удары в диапазоне
     detail_candidates = [f for f in candidate_frames if f < 100]
     detail_shots = [s for s in detected_shots if s['frame'] < 100]
     
@@ -645,7 +604,6 @@ def plot_detail_analysis(frames, y_values, candidate_frames, detected_shots, out
                           edgecolors='black', linewidth=2,
                           zorder=10, alpha=0.9)
                 
-                # Подпись
                 player_id = shot.get('player_id', 0)
                 shot_type = "SERVE" if shot.get('is_serve', False) else "SHOT"
                 plt.annotate(f'{shot_type} P{player_id}', 
@@ -727,7 +685,6 @@ def main():
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     
-    # Создание выходного видео
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
     
@@ -737,7 +694,6 @@ def main():
     
     print(f" Выходной файл: {output_video_path}")
     
-    # ========== ПЕРВЫЙ ПРОХОД: сбор детекций ==========
     print(f"\n Первый проход: сбор детекций...")
     
     frame_count = 0
@@ -752,7 +708,6 @@ def main():
         print(" Не удалось прочитать первый кадр!")
         return
     
-    # Детекция корта на первом кадре
     first_frame_court_kps = court_detector.detect_keypoints(first_frame)
     # first_frame_court_kps = court_detector.refine_keypoints(first_frame, first_frame_court_kps)
     print(f" Корт найден: {first_frame_court_kps.shape}")
@@ -768,7 +723,6 @@ def main():
                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
     cv2.imwrite("debug_court_points.jpg", debug_frame)
     
-    # Создаем мини-корт
     print(f"\n Инициализация мини-корта с сеткой...")
     mini_court = MiniCourtWithNetDivision(first_frame, net_model_path)
     net_bbox = net_detector.detect_net_bbox(first_frame)
@@ -777,10 +731,8 @@ def main():
     if net_bbox is not None:
         print(f"   Координаты сетки: {net_bbox}")
     
-    # Инициализируем мини-корт с сеткой
     net_line = mini_court.initialize_with_frame(first_frame, first_frame_court_kps, net_bbox)
     
-    # ДОБАВЛЯЕМ НЕДОСТАЮЩИЙ МЕТОД split_areas_with_net В CourtAreaAnalyzerWithNet
     if not hasattr(mini_court.area_analyzer, 'split_areas_with_net'):
         def split_areas_with_net(court_keypoints):
             """Разделяет зоны на верхние и нижние части с помощью линии сетки"""
@@ -792,10 +744,8 @@ def main():
             net_y = mini_court.area_analyzer.net_line[1]
             print(f" Разделение зон сеткой на Y={net_y}")
             
-            # Получаем все полигоны с разделением
             polygon_list = mini_court.area_analyzer.get_polygon_coords(court_keypoints, net_y)
             
-            # Обновляем self.areas для быстрого доступа
             mini_court.area_analyzer.areas = {}
             for poly_info in polygon_list:
                 mini_court.area_analyzer.areas[poly_info['name']] = poly_info['indices']
@@ -804,7 +754,6 @@ def main():
         
         mini_court.area_analyzer.split_areas_with_net = lambda court_kps: split_areas_with_net(court_kps, first_frame, width_frame)
     
-    # Принудительно вызываем разделение зон
     if net_line is not None:
         print(f"\n Разделение зон сеткой...")
         if hasattr(mini_court.area_analyzer, 'split_areas_with_net'):
@@ -813,7 +762,6 @@ def main():
             print(" Метод split_areas_with_net не найден, используем базовые зоны")
             mini_court.area_analyzer.areas = mini_court.area_analyzer.base_areas.copy()
         
-        # Получаем полигоны с разделением для отладки
         if hasattr(mini_court.area_analyzer, 'get_polygon_coords'):
             polygon_list = mini_court.area_analyzer.get_polygon_coords(first_frame_court_kps, first_frame, width_frame, net_line[1])
             print(f"   Получено {len(polygon_list)} полигонов с разделение сеткой")
@@ -821,10 +769,8 @@ def main():
         print(" Сетка не обнаружена, используем базовые зоны")
         mini_court.area_analyzer.areas = mini_court.area_analyzer.base_areas.copy()
     
-    # Создаем визуализатор
     visualizer = CourtVisualizerWithNet(mini_court.area_analyzer)
     
-    # Сохраняем отладочный кадр с зонами
     try:
         debug_frame = visualizer.draw_court_with_net(
             first_frame.copy(),
@@ -836,7 +782,6 @@ def main():
     except Exception as e:
         print(f" Ошибка при сохранении отладочного кадра: {e}")
     
-    # ПЕРВЫЙ ПРОХОД: сбор данных
     print(f"\n Первый проход: сбор данных...")
     cap = cv2.VideoCapture(input_video_path)
     all_ball_detections = []
@@ -877,7 +822,6 @@ def main():
         
         frame_count += 1
         
-        # Обновление прогресс-бара
         if frame_count % 10 == 0 or frame_count == total_frames:
             remaining_time = estimate_time_remaining(start_time, frame_count, total_frames)
             print_progress_bar(
@@ -893,7 +837,6 @@ def main():
     print(f"\n Первый проход завершен за {elapsed_time:.1f} секунд")
     print(f"   Средняя скорость: {frame_count/elapsed_time:.1f} FPS")
     
-    # ========== ОБРАБОТКА ДАННЫХ ==========
     print(f"\n Обработка данных...")
     
     # Интерполяция мяча
@@ -908,13 +851,8 @@ def main():
 
     print(f"Получили: ID игроков = {list(filtered_players[0].keys())}")
 
-    # В основном коде, после создания mini_court:
-    # Инициализация мини-корта с гомографией
-    # mini_court = MiniCourtWithNetDivision(first_frame, net_model_path)
-
     # Инициализация гомографии
     if first_frame_court_kps is not None:
-        # Преобразуем в нужный формат
         if isinstance(first_frame_court_kps, np.ndarray):
             court_kps_flat = first_frame_court_kps.flatten().tolist()
         else:
@@ -934,7 +872,6 @@ def main():
     # Конвертация координат для мини-корта
     print("   Конвертация координат для мини-корта...")
     
-    # Нужно передать кадры для детекции сетки
     frames_for_net = []
     cap_temp = cv2.VideoCapture(input_video_path)
     for _ in range(min(10, total_frames)):  # Первые 10 кадров
@@ -943,29 +880,6 @@ def main():
             frames_for_net.append(frame)
     cap_temp.release()
     
-    # try:
-    #     print("   Используем конвертацию с разделением сеткой...")
-
-    #     player_mini, ball_mini = mini_court.convert_with_net_division(
-    #         filtered_players,
-    #         interpolated,
-    #         first_frame_court_kps,
-    #         frames_for_net
-    #     )
-
-    #     print(f" Конвертация успешна: player_mini={len(player_mini)}, ball_mini={len(ball_mini)}")
-    # except Exception as e:
-    #     print(f" Ошибка конвертации с сеткой: {e}")
-    #     print(f"Тип ошибки: {type(e).__name__}")
-    #     print("   Используем упрощенную конвертацию...")
-    #     court_kps_flat = first_frame_court_kps.flatten().tolist()
-    #     player_mini, ball_mini = mini_court.convert_bounding_boxes_to_mini_court_coordinates(
-    #         filtered_players,
-    #         interpolated,
-    #         court_kps_flat
-    #     )
-    #     print(f" Упрощенная конвертация: player_mini={len(player_mini)}, ball_mini={len(ball_mini)}")
-        
     print("   Создание графика сглаженного движения мяча...")
     smoothed_stats = plot_ball_movement(
         ball_mini,
@@ -973,7 +887,6 @@ def main():
         title="Изменение координаты мяча на мини корте"
     )
 
-    # ========== ВТОРОЙ ПРОХОД: визуализация с расчетом скорости ==========
     print(f"\n Второй проход: визуализация с расчетом скорости...")
     
     cap = cv2.VideoCapture(input_video_path)
@@ -983,45 +896,25 @@ def main():
     # Инициализация калькулятора скорости
     speed_calculator = SpeedCalculator(fps=fps, court_width_meters=constants.DOUBLE_LINE_WIDTH, court_length_meters=constants.COURT_HEIGHT)
     
-    # Цвета для игроков
     player_colors = {
         1: (0, 255, 0),
         2: (255, 0, 0)
     }
     
-    # История для сглаживания скоростей
     player_speed_histories = defaultdict(list)
 
-    # player_stats_data = [{
-    #     'frame_num': 0,
-    #     'player_1_number_of_shots': 0,
-    #     'player_1_total_shot_speed': 0,
-    #     'player_1_last_shot_speed': 0,
-    #     'player_2_number_of_shots': 0,
-    #     'player_2_total_shot_speed': 0,
-    #     'player_2_last_shot_speed': 0,
-    # }]
-
-    # # Получаем кадры с ударами мяча
-    # ball_shot_frames = ball_tracker.get_ball_shot_frames(interpolated)
-
-    # 1. Находим все экстремумы с помощью scipy
     print("Поиск экстремумов траектории с помощью scipy...")
 
-    # Вариант A: Экстремумы Y координаты (рекомендуется)
     extremums_y = ball_tracker.get_all_extremums_scipy_simple(interpolated)
     candidate_frames_y = [e['frame'] for e in extremums_y]
     print(f"Вариант A (экстремумы Y): {len(candidate_frames_y)} кандидатов")
 
-    # Выбираем какой вариант использовать (рекомендую вариант A)
-    candidate_frames = candidate_frames_y  # или candidate_frames_deriv
+    candidate_frames = candidate_frames_y 
 
-    # 2. Создаем график анализа
     print("\nСоздание графиков анализа экстремумов...")
 
     # График для экстремумов Y
     if extremums_y:
-        # Создаем свой график для scipy экстремумов
         y_values = []
         for ball_pos in interpolated:
             if ball_pos and len(ball_pos) == 4:
@@ -1042,7 +935,6 @@ def main():
         plt.subplot(2, 1, 1)
         plt.plot(range(len(y_array)), y_array, 'b-', linewidth=1.5, alpha=0.7, label='Y координата')
         
-        # Отмечаем экстремумы
         maxima_frames = [e['frame'] for e in extremums_y if e['type'] == 'maximum']
         maxima_y = [y_array[f] for f in maxima_frames if f < len(y_array)]
         
@@ -1080,35 +972,29 @@ def main():
         
         print(f"График экстремумов scipy сохранен: output_videos/ball_extremums_scipy_y.png")
 
-    # НОВЫЙ КОД (вставить вместо старого):
     print(f"\n{'='*60}")
-    print("🎾 ИНИЦИАЛИЗАЦИЯ УЛУЧШЕННОГО ДЕТЕКТОРА УДАРОВ")
+    print(" ИНИЦИАЛИЗАЦИЯ УЛУЧШЕННОГО ДЕТЕКТОРА УДАРОВ")
     print(f"{'='*60}")
 
-    # 1. Инициализация нового детектора
+    # Детекция ударов
     simple_shot_detector = SimpleShotDetector(fps=fps, drawing_rectangle_width=mini_court.court_drawing_width, drawing_rectangle_height=mini_court.court_drawing_height)
 
-    # 2. Детекция событий (serve/shot/bounce)
-    print(f"\n🔍 Детекция событий на мини-корте...")
+    print(f"\n Детекция событий на мини-корте...")
     print(f"   Кандидатов для анализа: {len(candidate_frames)}")
     print(f"   Кадров с игроками: {len(player_mini)}")
     print(f"   Кадров с мячом: {sum(1 for b in ball_mini if b is not None)}")
 
-    # 3. Запуск детекции
     detected_events = simple_shot_detector.detect_events(
         candidate_frames=candidate_frames,
-        ball_positions=ball_mini,      # координаты мяча на мини-корте
-        player_positions=player_mini   # координаты игроков на мини-корте
+        ball_positions=ball_mini,
+        player_positions=player_mini
     )
 
-    # 4. Получение результатов
     shots_by_frame = simple_shot_detector.shots_by_frame
     stats = simple_shot_detector.get_statistics()
 
-    # 5. Вывод статистики
     simple_shot_detector.print_detailed_statistics()
 
-    # 6. Сохранение статистики в файл
     try:
         with open('shot_detector_stats.txt', 'w', encoding='utf-8') as f:
             f.write("=== СТАТИСТИКА УДАРОВ И РОЗЫГРЫШЕЙ ===\n\n")
@@ -1136,12 +1022,10 @@ def main():
                 f.write(f"  #{i+1}: кадры {rally.start_frame}-{rally.end_frame or '?'}, "
                     f"{rally.shot_count} ударов ({status}) - {winner}\n")
         
-        print(f"\n✅ Статистика сохранена в shot_detector_stats.txt")
+        print(f"\n Статистика сохранена в shot_detector_stats.txt")
     except Exception as e:
-        print(f"\n⚠️ Ошибка при сохранении статистики: {e}")
+        print(f"\n Ошибка при сохранении статистики: {e}")
 
-    # 7. Подготовка данных для визуализации
-    # Преобразуем события в старый формат для совместимости с графиками
     detected_shots_for_plots = []
     for event in detected_events:
         if event.event_type in ['serve', 'shot']:
@@ -1155,7 +1039,7 @@ def main():
                 'speed_after': 0  # можно добавить если есть
             })
 
-    print(f"\n📊 Подготовка к визуализации:")
+    print(f"\n Подготовка к визуализации:")
     print(f"   Ударов для отображения: {len(shots_by_frame)}")
     print(f"   Всего событий: {len(detected_events)}")
 
@@ -1166,12 +1050,8 @@ def main():
             print(f"  {i+1}. {event_type_ru:8} - Игрок {event.player_id} на кадре {event.frame} "
                 f"(уверенность: {event.confidence:.2f})")
 
-    # 8. Создание графиков анализа
-    print(f"\n{'='*60}")
-    print("📈 СОЗДАНИЕ ГРАФИКОВ АНАЛИЗА")
-    print(f"{'='*60}")
+    print(" СОЗДАНИЕ ГРАФИКОВ АНАЛИЗА")
 
-    # Создаем график с анализом
     shot_analysis_stats = plot_ball_shot_analysis(
         ball_positions=interpolated,
         candidate_frames=candidate_frames,
@@ -1180,9 +1060,7 @@ def main():
         title="Анализ детекции ударов по изменению координаты Y (новая логика)"
     )
 
-    print(f"\n{'='*60}")
     print(f"АНАЛИЗ ЗАВЕРШЕН")
-    print(f"{'='*60}")
 
     while True:
         success, frame = cap.read()
@@ -1192,7 +1070,7 @@ def main():
         annotated = frame.copy()
 
         try:
-            # ===== ВИЗУАЛИЗАЦИЯ ЗОН КОРТА С СЕТКОЙ =====
+            # ВИЗУАЛИЗАЦИЯ ЗОН КОРТА С СЕТКОЙ
             current_net_line = mini_court.net_line
             
             if current_net_line is not None:
@@ -1222,7 +1100,7 @@ def main():
                     if not np.isnan(x) and not np.isnan(y):
                         cv2.circle(annotated, (int(x), int(y)), 5, (0, 255, 0), -1)
         
-        # ===== ВИЗУАЛИЗАЦИЯ МЯЧА =====
+        # ВИЗУАЛИЗАЦИЯ МЯЧА
         if frame_count < len(smoothed):
             pos = smoothed[frame_count]
             if pos is not None and not np.any(np.isnan(pos)):
@@ -1234,20 +1112,19 @@ def main():
                 except:
                     pass
         
-        # ===== ВИЗУАЛИЗАЦИЯ ИГРОКОВ =====
+        # ВИЗУАЛИЗАЦИЯ ИГРОКОВ
         if frame_count < len(filtered_players):
             curr_players = filtered_players[frame_count]
             for permanent_id, box in curr_players.items():
                 try:
                     x1, y1, x2, y2 = map(int, box)
                     
-                    # Цвета в зависимости от постоянного ID
                     if permanent_id == 1:
-                        color = (0, 255, 0)  # Зеленый для нижнего игрока
+                        color = (0, 255, 0)
                     elif permanent_id == 2:
-                        color = (255, 0, 0)  # Красный для верхнего игрока
+                        color = (255, 0, 0)
                     else:
-                        color = (255, 255, 0)  # Желтый для других
+                        color = (255, 255, 0)
                     
                     cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)
                     cv2.putText(annotated, f"P{permanent_id}", (x1, y1-10),
@@ -1255,13 +1132,12 @@ def main():
                 except:
                     pass
         
-        # ===== ВИЗУАЛИЗАЦИЯ МИНИ-КОРТА =====
+        # ВИЗУАЛИЗАЦИЯ МИНИ-КОРТА
         if mini_court:
-                # Получаем позиции для текущего кадра
                 player_pos = player_mini[frame_count] if frame_count < len(player_mini) else None
                 ball_pos = ball_mini[frame_count] if frame_count < len(ball_mini) else None
                 
-                # ===== РАСЧЕТ СКОРОСТЕЙ =====
+                # РАСЧЕТ СКОРОСТЕЙ
                 player_speeds = {}
                 
                 if ball_pos is not None:
@@ -1270,7 +1146,6 @@ def main():
                 if player_pos is not None:
                     for player_id, position in player_pos.items():
                         if position is not None:
-                            # Получаем bbox игрока из filtered_players
                             player_bbox = None
                             if frame_count < len(filtered_players):
                                 curr_players = filtered_players[frame_count]
@@ -1281,7 +1156,6 @@ def main():
                                 player_id, position, player_bbox=player_bbox
                             )
                             
-                            # Сглаживаем скорость игрока
                             player_speed_histories[player_id].append(player_speed_kmh)
                             if len(player_speed_histories[player_id]) > 10:
                                 player_speed_histories[player_id].pop(0)
@@ -1298,27 +1172,25 @@ def main():
                     ball_positions=ball_pos_for_draw
                 )
 
-                # ===== ОТРИСОВКА УДАРОВ НА МИНИ-КОРТЕ =====
+                # ОТРИСОВКА УДАРОВ НА МИНИ-КОРТЕ
                 if frame_count in shots_by_frame:
                     event = shots_by_frame[frame_count]
                     
-                    # Визуализация в зависимости от типа события
                     if event.event_type == 'serve':
-                        color = (0, 255, 255)  # желтый для подачи
+                        color = (0, 255, 255)
                         label = f"SERVE P{event.player_id}"
                         marker_size = 15
                     elif event.event_type == 'shot':
-                        color = (0, 255, 0)    # зеленый для удара
+                        color = (0, 255, 0)
                         label = f"SHOT P{event.player_id}"
                         marker_size = 12
                     elif event.event_type == 'bounce':
-                        color = (255, 0, 0)    # красный для отскока
+                        color = (255, 0, 0)
                         label = "BOUNCE"
                         marker_size = 10
                     
                     # Рисуем маркер на мини-корте
                     if hasattr(mini_court, 'court_start_x'):
-                        # Конвертируем координаты мини-корта в координаты основного кадра
                         court_x = mini_court.court_start_x
                         court_y = mini_court.court_start_y
                         
@@ -1326,18 +1198,14 @@ def main():
                         marker_x = int(court_x + event.ball_position[0])
                         marker_y = int(court_y + event.ball_position[1])
                         
-                        # Рисуем круг
                         cv2.circle(annotated, (marker_x, marker_y), marker_size, color, 2)
-                        
-                        # Подпись
+
                         cv2.putText(annotated, label, (marker_x + 15, marker_y),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
                         
-                        # Для подачи добавляем дополнительный эффект
                         if event.event_type == 'serve':
                             cv2.circle(annotated, (marker_x, marker_y), marker_size + 5, color, 1)
                     
-                    # Также рисуем маркер на основном кадре для лучшей видимости
                     if frame_count < len(smoothed):
                         ball_pos_main = smoothed[frame_count]
                         if ball_pos_main is not None and len(ball_pos_main) == 4:
@@ -1347,7 +1215,6 @@ def main():
                             
                             cv2.circle(annotated, (center_x, center_y), 10, color, 2)
                             
-                            # Краткая подпись рядом с мячом
                             short_label = "S" if event.event_type == 'serve' else "H" if event.event_type == 'shot' else "B"
                             cv2.putText(annotated, f"{short_label}P{event.player_id}", 
                                     (center_x + 15, center_y),
@@ -1358,8 +1225,7 @@ def main():
                         event_type_ru = "ПОДАЧА" if event.event_type == 'serve' else "УДАР" if event.event_type == 'shot' else "ОТСКОК"
                         print(f"Кадр {frame_count}: {event_type_ru} - Игрок {event.player_id}")
                 
-                # ===== ОТОБРАЖЕНИЕ СКОРОСТЕЙ НА ВИДЕО =====
-                # 1. Панель скоростей в углу
+                # ОТОБРАЖЕНИЕ СКОРОСТЕЙ НА ВИДЕО
                 annotated = speed_calculator.draw_speed_info(
                     annotated, 
                     player_speeds,
@@ -1370,7 +1236,6 @@ def main():
                     rally = simple_shot_detector.current_rally
                     rally_text = f"Rally #{rally.rally_id}: {rally.shot_count} shots"
                     
-                    # Позиция для отображения (верхний левый угол)
                     cv2.putText(annotated, rally_text, (20, 40),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
                     cv2.putText(annotated, f"Serving: P{rally.serving_player}" if rally.serving_player else "No serve",
@@ -1379,7 +1244,6 @@ def main():
         out.write(annotated)
         frame_count += 1
         
-        # Обновление прогресс-бара
         if frame_count % 10 == 0 or frame_count == total_frames:
             remaining_time = estimate_time_remaining(start_time, frame_count, total_frames)
             print_progress_bar(
@@ -1402,7 +1266,6 @@ def main():
     fullscreen_width = 1280
     fullscreen_height = 720
     
-    # В основном коде, после расчета скоростей:
     create_fullscreen_mini_court_video(
         input_video_path=input_video_path,
         output_video_path=fullscreen_video_path,
@@ -1411,7 +1274,7 @@ def main():
         ball_mini=ball_mini,
         mini_court_data=mini_court,
         fps=fps,
-        player_avg_heights=speed_calculator.player_avg_heights,  # Передаем средние высоты боксов!
+        player_avg_heights=speed_calculator.player_avg_heights,
         trajectory_length=30,
         width=fullscreen_width,
         height=fullscreen_height
@@ -1429,8 +1292,7 @@ def main():
             print(f"  Средняя скорость: {avg_speed:.1f} км/ч ({avg_speed/3.6:.1f} м/с)")
             print(f"  Максимальная скорость: {max_speed:.1f} км/ч ({max_speed/3.6:.1f} м/с)")
 
-    # Добавьте статистику по розыгрышам
-    print(f"\n🏓 Статистика розыгрышей:")
+    print(f"\n Статистика розыгрышей:")
     for i, rally in enumerate(simple_shot_detector.rallies):
         status = "завершен" if rally.is_completed else "в процессе"
         winner_info = f"Победитель: P{rally.winner}" if rally.winner else "Без победителя"
