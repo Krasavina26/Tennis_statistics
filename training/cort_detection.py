@@ -1,12 +1,10 @@
 from ultralytics import YOLO
 
 def continue_train_court():
-    data_yml = r"C:\\Users\\krask\\Downloads\\Tennis Detection new version.v1i.yolov8\\data.yaml"
-
     model = YOLO('yolo26s-pose')
     
     results = model.train(
-    data=data_yml,
+    data="data.yaml",
     epochs=100,
     imgsz=1280,
     batch=4,
@@ -47,3 +45,4 @@ def continue_train_court():
 
 if __name__ == '__main__':
     continue_train_court()
+
